@@ -34,6 +34,7 @@ class BertSelfAttention(nn.Module):
     proj = proj.transpose(1, 2)
     return proj
 
+
   def attention(self, key, query, value, attention_mask):
     # each attention is calculated following eq (1) of https://arxiv.org/pdf/1706.03762.pdf
     # attention scores are calculated by multiply query and key 
@@ -45,9 +46,14 @@ class BertSelfAttention(nn.Module):
     # normalize the scores
     # multiply the attention scores to the value and get back V'
     # next, we need to concat multi-heads and recover the original shape [bs, seq_len, num_attention_heads * attention_head_size = hidden_size]
+    key_T = key.transpose(2, 3)
+    S = torch.matmul(query, key_T)   # queries along the rows and keys along the columns of S
+    S = S / math.sqrt(self.attention_head_size)
+    S = S + attention_mask  #attention_mask is broadcasted to the right dimension
+    S = F.softmax(S, dim=S.dim()-1)
+    
 
-    ### TODO
-    raise NotImplementedError
+
 
 
   def forward(self, hidden_states, attention_mask):
