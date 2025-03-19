@@ -51,8 +51,11 @@ class BertSelfAttention(nn.Module):
     S = S / math.sqrt(self.attention_head_size)
     S = S + attention_mask  #attention_mask is broadcasted to the right dimension
     S = F.softmax(S, dim=S.dim()-1)
-    
-
+    S = self.dropout(S)
+    V = torch.matmul(S, value)
+    V = V.transpose(1, 2).contiguous()
+    V = V.view(V.size(0), V.size(1), self.all_head_size)
+    return V
 
 
 
