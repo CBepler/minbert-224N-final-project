@@ -168,7 +168,7 @@ class BertModel(BertPreTrainedModel):
     # Get word embedding from self.word_embedding into input_embeds.
     inputs_embeds = None
     ### TODO
-    raise NotImplementedError
+    inputs_embeds = self.word_embedding(input_ids)
 
 
     # Get position index and position embedding from self.pos_embedding into pos_embeds.
@@ -176,7 +176,7 @@ class BertModel(BertPreTrainedModel):
 
     pos_embeds = None
     ### TODO
-    raise NotImplementedError
+    pos_embeds = self.pos_embedding(pos_ids)
 
 
     # Get token type ids, since we are not consider token type, just a placeholder.
@@ -185,7 +185,10 @@ class BertModel(BertPreTrainedModel):
 
     # Add three embeddings together; then apply embed_layer_norm and dropout and return.
     ### TODO
-    raise NotImplementedError
+    embed = inputs_embeds + pos_embeds + tk_type_embeds
+    out = self.embed_layer_norm(embed)
+    out = self.embed_dropout(out)
+    return out
 
 
   def encode(self, hidden_states, attention_mask):
