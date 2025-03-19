@@ -103,7 +103,11 @@ class BertLayer(nn.Module):
     """
     # Hint: Remember that BERT applies to the output of each sub-layer, before it is added to the sub-layer input and normalized 
     ### TODO
-    raise NotImplementedError
+    linear = dense_layer(output)
+    drop = dropout(linear)
+    residual = drop + input
+    norm = ln_layer(residual)
+    return norm
 
 
   def forward(self, hidden_states, attention_mask):
@@ -117,7 +121,12 @@ class BertLayer(nn.Module):
     4. a add-norm that takes the input and output of the feed forward layer
     """
     ### TODO
-    raise NotImplementedError
+    out = self.self_attention.forward(hidden_states, attention_mask)
+    addNorm1 = self.add_norm(hidden_states, out, self.attention_dense, self.attention_dropout, self.attention_layer_norm)
+    out = self.interm_dense(addNorm1)
+    out = self.interm_af(out)
+    out = self.add_norm(addNorm1, out, self.out_dense, self.out_dropout, self.out_layer_norm)
+    return out
 
 
 
